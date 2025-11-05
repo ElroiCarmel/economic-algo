@@ -10,9 +10,7 @@ import numpy as np
 from itertools import combinations
 
 
-def egalitarian(
-    valuation: ArrayLike, leximin: bool = False, verbose: bool = False
-) -> np.ndarray:
+def egalitarian(valuation: ArrayLike, leximin: bool = False) -> np.ndarray:
     """
     Finds an allocation that maxmimize the minimum value of agents given allocations.
     The leximin variant maximizes also all of the other minimum values.
@@ -24,6 +22,12 @@ def egalitarian(
     >>> val = [[0, 100], [50, 0]]
     >>> (val * egalitarian(val)).sum(axis=1).min().item()
     50.0
+    >>> np.allclose(egalitarian(val, leximin=True), [[0, 1], [1, 0]])
+    True
+    >>> val = [[4, 0, 0], [0, 3, 0], [5, 5, 10], [5, 5, 10]]
+    >>> expected = [[1, 0, 0], [0, 1, 0], [0, 0, 0.5], [0, 0, 0.5]]
+    >>> np.allclose(egalitarian(val, leximin=True), expected)
+    True
 
     Args:
         valuation (ArrayLike): Evaluation matrix. valuation[i, j] = p -> agent i values all of resource j as p.
@@ -42,39 +46,46 @@ def egalitarian(
         axis=1
     )  # element-wise multiplication
 
-    fixed_constraints = [
+    base_constraints = [
         allocation_matrix >= 0,
         allocation_matrix <= 1,
         allocation_matrix.sum(axis=0) == 1,
     ]
 
     objective = cp.Maximize(min_utility)
-    prob = cp.Problem(
+    problem = cp.Problem(
         objective=objective,
-        constraints=fixed_constraints + [utilities >= min_utility],
+        constraints=base_constraints + [utilities >= min_utility],
     )
 
-    prob.solve()
+    problem.solve()
 
-    # TODO: Lexmin
     if leximin:
-        fixed_constraints.append(utilities >= min_utility.value)
-        for c in range(2, n + 1):
-            z = cp.Variable()
-            cached = [cp.sum(cp.hstack(comb)) for comb in combinations(utilities, c)]
-            temp = [cach >= z for cach in cached]
-            prob = cp.Problem(objective=cp.Maximize(z), constraints=fixed_constraints + temp)
-            prob.solve()
-            for cach in cached:
-                fixed_constraints.append(cach >= z.value)
+        utility_sums = utilities
+        for subset_size in range(2, n + 1):
+            # Add previous min_utility as constant
+            for u_sum in utility_sums:
+                base_constraints.append(u_sum >= min_utility.value)
 
-    rounded = allocation_matrix.value.round(2)
-    if verbose:
-        print(allocation_summary(rounded))
-    return rounded
+            # Construt new utility sums combinations for this level
+            utility_sums = [
+                cp.sum(cp.hstack(combo))  # more efficient summing in cvxpy
+                for combo in combinations(utilities, subset_size)
+            ]
+            # Update to the next min_utility
+            min_utility = cp.Variable()
+            leximin_constraints = [u_sum >= min_utility for u_sum in utility_sums]
+            problem = cp.Problem(
+                objective=cp.Maximize(min_utility),
+                constraints=base_constraints + leximin_constraints,
+            )
+            problem.solve()
+
+    final_allocation = allocation_matrix.value.round(2)
+    return final_allocation
 
 
-def allocation_summary(alloc: np.ndarray) -> str:
+def summary(alloc: np.ndarray) -> str:
     agents_summaries = []
     for agent_idx in range(len(alloc)):
         prefix = f"Agent #{agent_idx+1} gets "
@@ -87,10 +98,12 @@ def allocation_summary(alloc: np.ndarray) -> str:
     return "\n".join(agents_summaries)
 
 
+def allocate(valuation: ArrayLike, leximin: bool = False) -> None:
+    allocation = egalitarian(valuation, leximin)
+    print(summary(allocation))
+
+
 if __name__ == "__main__":
     import doctest
 
-    # val = [[81, 19, 1], [70, 1, 29]]
-    val = [[0, 100], [50, 0]]
-    egalitarian(val, leximin=True, verbose=True)
-    # print(doctest.testmod())
+    print(doctest.testmod(verbose=True))
