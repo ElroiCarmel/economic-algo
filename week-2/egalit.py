@@ -22,6 +22,8 @@ def egalitarian(valuation: ArrayLike, leximin: bool = False) -> np.ndarray:
     >>> val = [[0, 100], [50, 0]]
     >>> (val * egalitarian(val)).sum(axis=1).min().item()
     50.0
+    
+    Leximin usage examples:
     >>> np.allclose(egalitarian(val, leximin=True), [[0, 1], [1, 0]])
     True
     >>> val = [[4, 0, 0], [0, 3, 0], [5, 5, 10], [5, 5, 10]]
@@ -106,4 +108,4 @@ def allocate(valuation: ArrayLike, leximin: bool = False) -> None:
 if __name__ == "__main__":
     import doctest
 
-    print(doctest.testmod(verbose=True))
+    print(doctest.testmod())
