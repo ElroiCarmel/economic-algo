@@ -44,7 +44,7 @@ def envy_free_room_allocation(valuations: list[list[float]], rent: float) -> Non
     >>> v, r = [[150, 10], [140, 10]], 130
     >>> envy_free_room_allocation(v, r)
     Pricing such that all prices > 0 doesn't exist
-    >>> v, r = [[150, 10], [140, 10]], 130
+    >>> v, r = [[150, 10], [140, 10]], 150
     >>> envy_free_room_allocation(v, r)
     Player 0 gets room 0 with value 150, and pays 140.0
     Player 1 gets room 1 with value 10, and pays 10.0
@@ -83,6 +83,6 @@ def envy_free_room_allocation(valuations: list[list[float]], rent: float) -> Non
 
 if __name__ == "__main__":
     import doctest
-    # doctest.testmod(verbose=True)
+    doctest.testmod(verbose=True)
     v = [[150, 0], [140, 10]]
     envy_free_room_allocation(valuations=v, rent=150)

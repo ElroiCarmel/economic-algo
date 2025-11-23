@@ -79,7 +79,5 @@ def envy_free_room_allocation(valuations: list[list[float]], rent: float) -> str
 
 if __name__ == "__main__":
     import doctest
-    # doctest.testmod(verbose=True)
-    v = [[10,20,70], [20,45,35],[10,45,45]]
-    v = [[150, 0], [140, 10]]
-    envy_free_room_allocation(valuations=v, rent=130)
+    doctest.testmod(verbose=True)
+    
