@@ -2,3 +2,4 @@
 *.lock
 .venv/
 **/sketch.py
+**/*.pkl
