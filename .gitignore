@@ -3,3 +3,4 @@
 .venv/
 **/sketch.py
 **/*.pkl
+**/__pycache__

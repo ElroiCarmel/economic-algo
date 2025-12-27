@@ -28,9 +28,24 @@ def compute_medians(total_budget: float, subjects_votes: list[list[float]], t) -
 def compute_budget(
     total_budget: float, citizen_votes: list[list[float]]
 ) -> list[float]:
+    """Compute budget according to the medians algorithm.
+
+    Args:
+        total_budget (float): Total budget for the projects.
+        citizen_votes (list[list[float]]): Votes of each citizen how exactly should be allocated.
+
+    Returns:
+        list[float]: The budget to each project.
+        
+    Usage Example:
+    >>> compute_budget(100, [[100, 0, 0], [0, 0, 100]])
+    [50.0, 0, 50.0]
+    
+    """
     # find t such that total allocation equals total_budget
     l, r = 0, 1
     subjects_votes = list(map(list, zip(*citizen_votes)))
+    # More convenient matrix for the algorrithm. ordered first by subject and then by citizen.
     logger.debug("subjects_votes: %s.", subjects_votes)
     while True:
         mid = (l + r) / 2
@@ -48,10 +63,6 @@ def compute_budget(
 
 
 if __name__ == "__main__":
-    # k, c = 10, 50
-    # print(all_f(k, 0.2, c))
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.FileHandler("temp.log", mode="w"))
-    te = compute_budget(100, [[5, 14, 32, 49], [40,41,11,8],[8,15,43,34]])
-    print(te)
+    import doctest
+    print(doctest.testmod())
     

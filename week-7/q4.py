@@ -6,9 +6,9 @@ def elect_next_budget_item(
     amount_of_supporters = dict()
     supporters_balance = dict()
     for voter, vote in enumerate(votes):
-        voter_blance = balances[voter]
+        voter_balance = balances[voter]
         for item in vote:
-            supporters_balance[item] = supporters_balance.get(item, 0) + voter_blance
+            supporters_balance[item] = supporters_balance.get(item, 0) + voter_balance
             amount_of_supporters[item] = amount_of_supporters.get(item, 0) + 1
 
     min_cost = float("inf")
