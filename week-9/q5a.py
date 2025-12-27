@@ -41,6 +41,7 @@ def compute_budget(
     >>> compute_budget(100, [[100, 0, 0], [0, 0, 100]])
     [50.0, 0, 50.0]
     
+    
     """
     # find t such that total allocation equals total_budget
     l, r = 0, 1

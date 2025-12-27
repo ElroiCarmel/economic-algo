@@ -29,6 +29,8 @@ def compute_budget(
     Usage Example:
     >>> compute_budget(100, [[100, 0, 0], [0, 0, 100]])
     [50.0, 0, 50.0]
+    >>> compute_budget(100, [[20, 30, 50], [20, 50, 30]])
+    [20, 40.0, 40.0]
     """
     subjects_votes = list(map(list, zip(*citizen_votes)))
     breakpoints = sorted(compute_breakpoints(total_budget, subjects_votes))
@@ -71,10 +73,6 @@ def compute_budget(
 
 if __name__ == "__main__":
     import doctest
-
     # logger.addHandler(logging.StreamHandler())
     # logger.setLevel(logging.DEBUG)
-    # budget = 100
-    # cv = [[24, 70, 6], [37, 20, 43]]
-    # compute_budget(budget, cv)
     print(doctest.testmod())
